@@ -1,0 +1,698 @@
+<template>
+    <div class="dashboard">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">W</div>
+                <div>
+                    <h1>WanderRoster</h1>
+                    <p>TRAVEL INTELLIGENCE</p>
+                </div>
+            </div>
+
+            <p class="nav-heading">WORKSPACE</p>
+
+            <button class={dashboardNavClass}
+                    data-page="dashboard"
+                    onclick={handleNavigation}>
+                ◈ Dashboard
+            </button>
+
+            <button class={travelNavClass}
+                    data-page="travel"
+                    onclick={handleNavigation}>
+                ✈ Travel Requests
+            </button>
+
+            <button class={financeNavClass}
+                    data-page="finance"
+                    onclick={handleNavigation}>
+                ₹ Finance Portal
+            </button>
+
+            <button class={managerNavClass}
+                    data-page="manager"
+                    onclick={handleNavigation}>
+                ✓ Manager Portal
+            </button>
+
+            <button class={settlementNavClass}
+                    data-page="settlement"
+                    onclick={handleNavigation}>
+                ₹ Expense Settlement
+            </button>
+
+            <div class="ai-card">
+                <div class="ai-icon">✧</div>
+                <h3>Smart Travel AI</h3>
+                <p>
+                    Make smarter travel decisions with
+                    policy-aware insights.
+                </p>
+                <span>● Dashboard connected</span>
+            </div>
+        </aside>
+
+        <!-- MAIN WORKSPACE -->
+        <main class="main-content">
+
+            <!-- DASHBOARD OVERVIEW -->
+            <template lwc:if={isDashboardPage}>
+                <header class="topbar">
+                    <div>
+                        <p class="eyebrow">
+                            TRAVEL MANAGEMENT / OVERVIEW
+                        </p>
+                        <h2>WanderRoster <span>Dashboard</span></h2>
+                        <p class="muted">
+                            Your travel operations at a glance.
+                        </p>
+                    </div>
+
+                    <div class="profile">
+                        <span class="live">● LIVE DATA</span>
+                        <div class="avatar">WR</div>
+                    </div>
+                </header>
+
+                <section class="hero">
+                    <div>
+                        <span class="hero-label">
+                            ✦ YOUR TRAVEL COMMAND CENTER
+                        </span>
+                        <h2>
+                            Travel smarter.<br/>
+                            <span>Spend wiser.</span>
+                        </h2>
+                        <p>
+                            Monitor travel requests, track approval progress,
+                            and bring your travel operations into one workspace.
+                        </p>
+                    </div>
+
+                    <div class="hero-art" aria-hidden="true">
+                        <div class="orbit orbit-a"></div>
+                        <div class="orbit orbit-b"></div>
+                        <div class="planet">✈</div>
+                    </div>
+                </section>
+
+                <!-- DASHBOARD STATISTICS -->
+                <section>
+                    <div class="section-title">
+                        <div>
+                            <h3>Travel Overview</h3>
+                            <p>
+                                Summary based on retrieved Salesforce records
+                            </p>
+                        </div>
+                        <span class="period">ALL RETRIEVED REQUESTS</span>
+                    </div>
+
+                    <div class="stats">
+                        <article class="stat-card">
+                            <div class="stat-head">
+                                <span>Total Requests</span>
+                                <span class="stat-icon purple">▤</span>
+                            </div>
+                            <h2>{totalRequests}</h2>
+                            <p>Travel requests retrieved</p>
+                            <div class="mini-bars" aria-hidden="true">
+                                <i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i>
+                            </div>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-head">
+                                <span>Pending Approval</span>
+                                <span class="stat-icon amber">◷</span>
+                            </div>
+                            <h2>{pendingApprovals}</h2>
+                            <p>Awaiting a decision</p>
+                            <div class="progress amber-progress"
+                                 aria-hidden="true">
+                                <i></i>
+                            </div>
+                            <small>Review outstanding requests</small>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-head">
+                                <span>Approved Requests</span>
+                                <span class="stat-icon teal">✓</span>
+                            </div>
+                            <h2>{approvedRequests}</h2>
+                            <p>Approved for travel</p>
+                            <div class="progress" aria-hidden="true">
+                                <i></i>
+                            </div>
+                            <small>Approval status summary</small>
+                        </article>
+
+                        <article class="stat-card">
+                            <div class="stat-head">
+                                <span>Estimated Spend</span>
+                                <span class="stat-icon red">₹</span>
+                            </div>
+                            <h2>
+                                <lightning-formatted-number
+                                    value={totalEstimatedSpend}
+                                    format-style="currency"
+                                    currency-code="INR"
+                                    maximum-fraction-digits="0">
+                                </lightning-formatted-number>
+                            </h2>
+                            <p>Combined estimated travel cost</p>
+                            <div class="mini-bars" aria-hidden="true">
+                                <i></i><i></i><i></i><i></i>
+                                <i></i><i></i><i></i>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <template lwc:if={isLoading}>
+                    <lightning-spinner
+                        alternative-text="Loading travel requests"
+                        size="medium">
+                    </lightning-spinner>
+                </template>
+
+                <template lwc:if={errorMessage}>
+                    <div class="slds-notify slds-notify_alert
+                                slds-alert_error"
+                         role="alert">
+                        {errorMessage}
+                    </div>
+                </template>
+
+                <!-- ANALYTICS AND AI INSIGHTS -->
+                <div class="lower-grid">
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h3>Spending Analytics</h3>
+                                <p>
+                                    Estimated spend across retrieved requests
+                                </p>
+                            </div>
+                            <span class="chip">Salesforce data</span>
+                        </div>
+
+                        <div class="chart">
+                            <div class="axis">
+                                <span>Overview</span>
+                                <span>Requests</span>
+                            </div>
+                            <div class="plot">
+                                <div class="grid-lines"></div>
+                                <div class="months">
+                                    <span>Total estimated spend</span>
+                                    <span>
+                                        <lightning-formatted-number
+                                            value={totalEstimatedSpend}
+                                            format-style="currency"
+                                            currency-code="INR"
+                                            maximum-fraction-digits="0">
+                                        </lightning-formatted-number>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="muted">
+                            Spending summary based on retrieved Salesforce
+                            records.
+                        </p>
+                    </section>
+
+                    <section class="panel ai-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h3>AI Insights</h3>
+                                <p>Intelligent travel assistance</p>
+                            </div>
+                            <span class="ready">READY TO EXTEND</span>
+                        </div>
+
+                        <div class="insight">
+                            <div class="insight-icon teal">✧</div>
+                            <div>
+                                <h4>Travel policy checks</h4>
+                                <p>
+                                    Review policy information and identify
+                                    requests needing additional attention.
+                                </p>
+                                <small>POLICY INTELLIGENCE</small>
+                            </div>
+                        </div>
+
+                        <div class="insight">
+                            <div class="insight-icon amber">₹</div>
+                            <div>
+                                <h4>Cost-saving recommendations</h4>
+                                <p>
+                                    Help employees compare budgets and
+                                    estimated travel costs.
+                                </p>
+                                <small>COST OPTIMIZATION</small>
+                            </div>
+                        </div>
+
+                        <div class="ai-footer">
+                            AI recommendations appear when recommendation
+                            logic is connected to the application.
+                        </div>
+                    </section>
+                </div>
+
+                <!-- RECENT REQUESTS -->
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Recent Travel Requests</h3>
+                            <p>Live records retrieved from Salesforce</p>
+                        </div>
+                        <span class="view-all">
+                            {totalRequests} requests
+                        </span>
+                    </div>
+
+                    <template lwc:if={hasTravelRequests}>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">REQUEST</th>
+                                        <th scope="col">ORIGIN</th>
+                                        <th scope="col">DESTINATION</th>
+                                        <th scope="col">ESTIMATED TOTAL</th>
+                                        <th scope="col">TRAVEL STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template
+                                        for:each={travelRequestsWithStatus}
+                                        for:item="request">
+                                        <tr key={request.Id}>
+                                            <td>
+                                                <strong>{request.Name}</strong>
+                                            </td>
+                                            <td>{request.Origin__c}</td>
+                                            <td>{request.Destination__c}</td>
+                                            <td>
+                                                <lightning-formatted-number
+                                                    value={request.Estimated_Total__c}
+                                                    format-style="currency"
+                                                    currency-code="INR"
+                                                    maximum-fraction-digits="2">
+                                                </lightning-formatted-number>
+                                            </td>
+                                            <td>
+                                                <span class={request.statusClass}>
+                                                    {request.Travel_Status__c}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showEmptyMessage}>
+                        <div class="slds-text-align_center
+                                    slds-p-around_large">
+                            <h3 class="slds-text-heading_medium">
+                                No Travel Requests Yet
+                            </h3>
+                            <p class="muted">
+                                Submit a request from Travel Requests.
+                            </p>
+                        </div>
+                    </template>
+                </section>
+            </template>
+
+            <!-- TRAVEL REQUESTS PAGE -->
+            <template lwc:if={isTravelPage}>
+                <header class="topbar">
+                    <div>
+                        <p class="eyebrow">
+                            TRAVEL MANAGEMENT / REQUESTS
+                        </p>
+                        <h2>Travel <span>Requests</span></h2>
+                        <p class="muted">
+                            Create and track company travel requests.
+                        </p>
+                    </div>
+                    <div class="profile">
+                        <span class="live">● LIVE DATA</span>
+                        <div class="avatar">WR</div>
+                    </div>
+                </header>
+
+                <!-- REQUEST SUMMARY -->
+                <section class="stats">
+                    <article class="stat-card">
+                        <div class="stat-head">
+                            <span>Total Requests</span>
+                            <span class="stat-icon purple">▤</span>
+                        </div>
+                        <h2>{totalRequests}</h2>
+                        <p>Retrieved travel requests</p>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-head">
+                            <span>Pending Approvals</span>
+                            <span class="stat-icon amber">◷</span>
+                        </div>
+                        <h2>{pendingApprovals}</h2>
+                        <p>Awaiting a decision</p>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-head">
+                            <span>Approved Requests</span>
+                            <span class="stat-icon teal">✓</span>
+                        </div>
+                        <h2>{approvedRequests}</h2>
+                        <p>Approved for travel</p>
+                    </article>
+
+                    <article class="stat-card">
+                        <div class="stat-head">
+                            <span>Estimated Spend</span>
+                            <span class="stat-icon red">₹</span>
+                        </div>
+                        <h2>
+                            <lightning-formatted-number
+                                value={totalEstimatedSpend}
+                                format-style="currency"
+                                currency-code="INR"
+                                maximum-fraction-digits="0">
+                            </lightning-formatted-number>
+                        </h2>
+                        <p>Combined estimated costs</p>
+                    </article>
+                </section>
+
+                <!-- CREATE REQUEST FORM -->
+                <section class="panel travel-form-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Create Travel Request</h3>
+                            <p>
+                                Enter your trip details and estimated costs.
+                            </p>
+                        </div>
+                        <span class="chip">New request</span>
+                    </div>
+
+                    <form
+                        class="travel-request-form"
+                        onsubmit={handleSubmitTravelRequest}>
+
+                        <!-- INLINE FORM ERROR ALERT -->
+                        <template lwc:if={formErrorMessage}>
+                            <div class="slds-notify slds-notify_alert slds-alert_error slds-m-bottom_medium"
+                                 style="background: #e53e3e; color: #ffffff; padding: 12px 16px; border-radius: 6px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;"
+                                 role="alert">
+                                <span style="font-size: 16px;">⚠️</span>
+                                <span>{formErrorMessage}</span>
+                            </div>
+                        </template>
+
+                        <div class="detail-grid">
+
+                            <!-- ORIGIN -->
+                            <div class="form-field">
+                                <label class="custom-form-label" for="origin">
+                                    <span>*</span> Origin
+                                </label>
+                                <lightning-input
+                                    id="origin"
+                                    name="origin"
+                                    type="text"
+                                    label="Origin"
+                                    variant="label-hidden"
+                                    value={origin}
+                                    onchange={handleOriginChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- DESTINATION -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="destination">
+                                    <span>*</span> Destination
+                                </label>
+                                <lightning-input
+                                    id="destination"
+                                    name="destination"
+                                    type="text"
+                                    label="Destination"
+                                    variant="label-hidden"
+                                    value={destination}
+                                    onchange={handleDestinationChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- END DATE -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="endDate">
+                                    <span>*</span> End Date
+                                </label>
+                                <lightning-input
+                                    id="endDate"
+                                    name="endDate"
+                                    type="date"
+                                    label="End Date"
+                                    variant="label-hidden"
+                                    value={endDate}
+                                    onchange={handleEndDateChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- START DATE -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="startDate">
+                                    <span>*</span> Start Date
+                                </label>
+                                <lightning-input
+                                    id="startDate"
+                                    name="startDate"
+                                    type="date"
+                                    label="Start Date"
+                                    variant="label-hidden"
+                                    value={startDate}
+                                    onchange={handleStartDateChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- TRAVEL COST -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="travelCost">
+                                    <span>*</span> Estimated Travel Cost (₹)
+                                </label>
+                                <lightning-input
+                                    id="travelCost"
+                                    name="travelCost"
+                                    type="number"
+                                    label="Estimated Travel Cost (₹)"
+                                    variant="label-hidden"
+                                    min="0.01"
+                                    message-when-range-underflow="Amount must be greater than 0"
+                                    step="0.01"
+                                    value={travelCost}
+                                    onchange={handleTravelCostChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- HOTEL COST -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="hotelCost">
+                                    <span>*</span> Estimated Hotel Cost (₹)
+                                </label>
+                                <lightning-input
+                                    id="hotelCost"
+                                    name="hotelCost"
+                                    type="number"
+                                    label="Estimated Hotel Cost (₹)"
+                                    variant="label-hidden"
+                                    min="0"
+                                    message-when-range-underflow="Amount cannot be negative"
+                                    step="0.01"
+                                    value={hotelCost}
+                                    onchange={handleHotelCostChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- OTHER COST -->
+                            <div class="form-field">
+                                <label class="custom-form-label"
+                                       for="otherEstimatedCost">
+                                    <span>*</span> Other Estimated Cost (₹)
+                                </label>
+                                <lightning-input
+                                    id="otherEstimatedCost"
+                                    name="otherEstimatedCost"
+                                    type="number"
+                                    label="Other Estimated Cost (₹)"
+                                    variant="label-hidden"
+                                    min="0"
+                                    message-when-range-underflow="Amount cannot be negative"
+                                    step="0.01"
+                                    value={otherEstimatedCost}
+                                    onchange={handleOtherEstimatedCostChange}
+                                    required>
+                                </lightning-input>
+                            </div>
+
+                            <!-- TOTAL PREVIEW -->
+                            <div class="total-preview">
+                                <span>Estimated Total</span>
+                                <h3>₹{formattedEstimatedTotal}</h3>
+                            </div>
+                        </div>
+
+                        <div class="finance-actions">
+                            <lightning-button
+                                type="submit"
+                                variant="brand"
+                                label="Submit Travel Request"
+                                disabled={isSubmitting}>
+                            </lightning-button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- REQUEST RECORDS -->
+                <section class="panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h3>Travel Request Records</h3>
+                            <p>
+                                Review trip details and approval statuses.
+                            </p>
+                        </div>
+                        <span class="chip">
+                            {totalRequests} requests
+                        </span>
+                    </div>
+
+                    <template lwc:if={isLoading}>
+                        <lightning-spinner
+                            alternative-text="Loading travel requests"
+                            size="medium">
+                        </lightning-spinner>
+                    </template>
+
+                    <template lwc:if={errorMessage}>
+                        <div class="slds-notify slds-notify_alert
+                                    slds-alert_error"
+                             role="alert">
+                            {errorMessage}
+                        </div>
+                    </template>
+
+                    <template lwc:if={showEmptyMessage}>
+                        <div class="slds-text-align_center
+                                    slds-p-around_large">
+                            <h3 class="slds-text-heading_medium">
+                                No Travel Requests Yet
+                            </h3>
+                            <p class="muted">
+                                Use the form above to create a request.
+                            </p>
+                        </div>
+                    </template>
+
+                    <template lwc:if={hasTravelRequests}>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">REQUEST</th>
+                                        <th scope="col">ORIGIN</th>
+                                        <th scope="col">DESTINATION</th>
+                                        <th scope="col">END DATE</th>
+                                        <th scope="col">START DATE</th>
+                                        <th scope="col">ESTIMATED TOTAL</th>
+                                        <th scope="col">TRAVEL STATUS</th>
+                                        <th scope="col">FINANCE REVIEW</th>
+                                        <th scope="col">MANAGER DECISION</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <template
+                                        for:each={travelRequestsWithStatus}
+                                        for:item="request">
+                                        <tr key={request.Id}>
+                                            <td>
+                                                <strong>{request.Name}</strong>
+                                            </td>
+                                            <td>{request.Origin__c}</td>
+                                            <td>{request.Destination__c}</td>
+                                            <td>{request.End_Date__c}</td>
+                                            <td>{request.Start_Date__c}</td>
+                                            <td>
+                                                <lightning-formatted-number
+                                                    value={request.Estimated_Total__c}
+                                                    format-style="currency"
+                                                    currency-code="INR"
+                                                    maximum-fraction-digits="2">
+                                                </lightning-formatted-number>
+                                            </td>
+                                            <td>
+                                                <span class={request.statusClass}>
+                                                    {request.Travel_Status__c}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {request.Finance_Review_Status__c}
+                                            </td>
+                                            <td>
+                                                {request.Manager_Approval_Status__c}
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+                </section>
+            </template>
+
+            <!-- FINANCE PORTAL -->
+            <template lwc:if={isFinancePage}>
+                <c-wander-roster-finance></c-wander-roster-finance>
+            </template>
+
+            <!-- MANAGER PORTAL -->
+            <template lwc:if={isManagerPage}>
+                <c-wander-roster-manager></c-wander-roster-manager>
+            </template>
+
+            <!-- EXPENSE SETTLEMENT -->
+            <template lwc:if={isSettlementPage}>
+                <c-wander-roster-settlement></c-wander-roster-settlement>
+            </template>
+
+        </main>
+    </div>
+</template>

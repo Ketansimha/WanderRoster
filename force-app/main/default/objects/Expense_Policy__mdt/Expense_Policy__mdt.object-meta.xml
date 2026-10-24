@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Stores configurable expense validation and approval policies for WanderRoster.</description>
+    <label>Expense Policy</label>
+    <pluralLabel>Expense Policies</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

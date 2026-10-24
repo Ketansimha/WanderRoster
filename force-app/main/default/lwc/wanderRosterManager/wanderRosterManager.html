@@ -1,0 +1,199 @@
+<template>
+    <div class="manager-portal">
+        <header class="portal-header">
+            <div class="header-content">
+                <p class="eyebrow">WANDERROSTER / APPROVALS</p>
+                <h1 class="portal-title">Manager Portal</h1>
+                <p class="portal-subtitle">
+                    Review finance-cleared travel requests and record your decision.
+                </p>
+            </div>
+
+            <div class="header-actions">
+                <lightning-button
+                    label="Refresh"
+                    title="Refresh travel requests"
+                    icon-name="utility:refresh"
+                    onclick={handleRefresh}
+                    disabled={isLoading}>
+                </lightning-button>
+            </div>
+        </header>
+
+        <template lwc:if={errorMessage}>
+            <div class="error-message" role="alert">
+                {errorMessage}
+            </div>
+        </template>
+
+        <section class="summary-grid">
+            <article class="summary-card">
+                <span class="summary-label">Awaiting Decision</span>
+                <strong class="summary-value">{pendingCount}</strong>
+            </article>
+
+            <article class="summary-card">
+                <span class="summary-label">Approved</span>
+                <strong class="summary-value summary-approved">
+                    {approvedCount}
+                </strong>
+            </article>
+
+            <article class="summary-card">
+                <span class="summary-label">Rejected</span>
+                <strong class="summary-value summary-rejected">
+                    {rejectedCount}
+                </strong>
+            </article>
+        </section>
+
+        <section class="requests-panel">
+            <div class="panel-heading">
+                <div>
+                    <h2>Travel Requests</h2>
+                    <p>
+                        Only finance-cleared, pending requests can be decided.
+                    </p>
+                </div>
+            </div>
+
+            <div class="filters">
+                <div class="search-box">
+                    <label class="control-label" for="request-search">
+                        Search requests
+                    </label>
+                    <lightning-input
+                        id="request-search"
+                        variant="label-hidden"
+                        type="search"
+                        placeholder="Search by request, employee or destination"
+                        value={searchTerm}
+                        onchange={handleSearch}>
+                    </lightning-input>
+                </div>
+
+                <div class="filter-box">
+                    <label class="control-label" for="request-filter">
+                        Filter by status
+                    </label>
+                    <lightning-combobox
+                        id="request-filter"
+                        variant="label-hidden"
+                        value={statusFilter}
+                        options={filterOptions}
+                        onchange={handleFilterChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+
+            <template lwc:if={isLoading}>
+                <div class="loading-state">
+                    <lightning-spinner
+                        alternative-text="Loading travel requests"
+                        size="medium">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+            <template lwc:if={hasRequests}>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request</th>
+                                <th>Employee</th>
+                                <th>Destination</th>
+                                <th>Estimated Cost</th>
+                                <th>Finance Status</th>
+                                <th>Manager Status</th>
+                                <th>Travel Status</th>
+                                <th>Manager Decision</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <template
+                                for:each={visibleRequests}
+                                for:item="request">
+                                <tr key={request.id}>
+                                    <td>
+                                        <strong class="request-name">
+                                            {request.name}
+                                        </strong>
+                                    </td>
+
+                                    <td>{request.employee}</td>
+                                    <td>{request.destination}</td>
+                                    <td class="cost-cell">{request.costLabel}</td>
+
+                                    <td>
+                                        <span class={request.financeClass}>
+                                            {request.financeStatus}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        <span class={request.managerClass}>
+                                            {request.managerStatus}
+                                        </span>
+                                    </td>
+
+                                    <td>{request.travelStatus}</td>
+
+                                    <td>
+                                        <template lwc:if={request.canDecide}>
+                                            <div class="action-buttons">
+                                                <lightning-button
+                                                    label="Approve"
+                                                    title="Approve this travel request"
+                                                    variant="brand"
+                                                    data-id={request.id}
+                                                    onclick={handleApprove}
+                                                    disabled={isProcessing}>
+                                                </lightning-button>
+
+                                                <lightning-button
+                                                    label="Reject"
+                                                    title="Reject this travel request"
+                                                    variant="destructive"
+                                                    data-id={request.id}
+                                                    onclick={handleReject}
+                                                    disabled={isProcessing}>
+                                                </lightning-button>
+                                            </div>
+                                        </template>
+
+                                        <template lwc:else>
+                                            <span class="status-label">
+                                                {request.actionLabel}
+                                            </span>
+                                        </template>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template lwc:else>
+                <template lwc:if={isLoading}>
+                    <p class="empty-message">Loading requests...</p>
+                </template>
+
+                <template lwc:else>
+                    <div class="empty-message">
+                        <h3>No matching travel requests</h3>
+                        <p>
+                            Try another search or filter, or refresh the portal.
+                        </p>
+                    </div>
+                </template>
+            </template>
+        </section>
+
+        <footer class="portal-footer">
+            WanderRoster · Manager Approval Workspace
+        </footer>
+    </div>
+</template>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Receipt_Status__c</fullName>
+    <label>Receipt Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Awaiting Receipt</fullName>
+                <default>false</default>
+                <label>Awaiting Receipt</label>
+            </value>
+            <value>
+                <fullName>Submitted Within Deadline</fullName>
+                <default>false</default>
+                <label>Submitted Within Deadline</label>
+            </value>
+            <value>
+                <fullName>Submitted Late</fullName>
+                <default>false</default>
+                <label>Submitted Late</label>
+            </value>
+            <value>
+                <fullName>Missing</fullName>
+                <default>false</default>
+                <label>Missing</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

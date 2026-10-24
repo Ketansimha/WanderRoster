@@ -1,0 +1,429 @@
+<template>
+    <div class="dashboard">
+        <header class="hero">
+            <div class="hero-content">
+                <p class="eyebrow">WANDERROSTER • FINANCE</p>
+                <h1>Expense Settlement Center</h1>
+                <p class="subtitle">
+                    Review manager-approved trips, validate expense claims and track reimbursements.
+                </p>
+            </div>
+            <lightning-button
+                label="Refresh"
+                icon-name="utility:refresh"
+                variant="brand"
+                onclick={handleRefresh}
+                disabled={isLoading}>
+            </lightning-button>
+        </header>
+
+        <section class="metrics" aria-label="Financial overview">
+            <article class="metric">
+                <span>Total Reports</span>
+                <strong>{totalReports}</strong>
+            </article>
+            <article class="metric pending">
+                <span>Pending Reports</span>
+                <strong>{pendingReports}</strong>
+            </article>
+            <article class="metric approved">
+                <span>Approved Reports</span>
+                <strong>{approvedReports}</strong>
+            </article>
+            <article class="metric amount">
+                <span>Total Claimed</span>
+                <strong>
+                    <lightning-formatted-number
+                        value={totalExpenses}
+                        format-style="currency"
+                        currency-code="INR"
+                        maximum-fraction-digits="2">
+                    </lightning-formatted-number>
+                </strong>
+            </article>
+        </section>
+
+        <section class="metrics secondary-metrics" aria-label="Receipt and payment overview">
+            <article class="metric">
+                <span>Paid Reports</span>
+                <strong>{paidReports}</strong>
+            </article>
+            <article class="metric pending">
+                <span>Reports Requiring Review</span>
+                <strong>{reviewRequiredReports}</strong>
+            </article>
+            <article class="metric">
+                <span>Missing Receipts</span>
+                <strong>{missingReceiptCount}</strong>
+            </article>
+            <article class="metric">
+                <span>Late Receipts</span>
+                <strong>{lateReceiptCount}</strong>
+            </article>
+        </section>
+
+        <!-- FINANCE QUEUE -->
+        <section class="panel">
+            <h2>Manager-Approved Travel Requests — Finance Queue</h2>
+            <p class="subtitle">
+                Every manager-approved trip is listed. A trip without an expense
+                report remains visible, but cannot be approved for reimbursement.
+            </p>
+
+            <template lwc:if={errorMessage}>
+                <div class="error" role="alert">{errorMessage}</div>
+            </template>
+
+            <template lwc:if={isLoading}>
+                <lightning-spinner
+                    alternative-text="Loading Finance queue"
+                    size="medium">
+                </lightning-spinner>
+            </template>
+
+            <template lwc:if={hasReports}>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th scope="col">Travel Request</th>
+                                <th scope="col">Route</th>
+                                <th scope="col">Estimated Cost</th>
+                                <th scope="col">Expense Report</th>
+                                <th scope="col">Claimed Amount</th>
+                                <th scope="col">Finance Status</th>
+                                <th scope="col">Policy</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={managerApprovedReports} for:item="item">
+                                <tr key={item.travelRequestId}>
+                                    <td>{item.travelRequestName}</td>
+                                    <td>{item.travelRoute}</td>
+                                    <td>
+                                        <lightning-formatted-number
+                                            value={item.estimatedTravelCost}
+                                            format-style="currency"
+                                            currency-code="INR"
+                                            maximum-fraction-digits="2">
+                                        </lightning-formatted-number>
+                                    </td>
+                                    <td>{item.expenseReportName}</td>
+                                    <td>
+                                        <template lwc:if={item.hasExpenseReport}>
+                                            <lightning-formatted-number
+                                                value={item.expenseAmount}
+                                                format-style="currency"
+                                                currency-code="INR"
+                                                maximum-fraction-digits="2">
+                                            </lightning-formatted-number>
+                                        </template>
+                                        <template lwc:else>
+                                            <span>Not submitted</span>
+                                        </template>
+                                    </td>
+                                    <td>
+                                        <span class={item.queueStatusClass}>
+                                            {item.queueStatus}
+                                        </span>
+                                    </td>
+                                    <td>{item.policyStatus}</td>
+                                    <td>
+                                        <lightning-button
+                                            label="Review"
+                                            data-id={item.travelRequestId}
+                                            variant="neutral"
+                                            onclick={handleSelectReport}>
+                                        </lightning-button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <template lwc:if={showEmptyReports}>
+                <p class="empty">
+                    No manager-approved travel requests were found.
+                </p>
+            </template>
+        </section>
+
+        <!-- SELECTED TRAVEL REQUEST -->
+        <template lwc:if={hasSelectedTravelRequest}>
+            <section class="panel">
+                <h2>Travel and Employee Details</h2>
+                <div class="detail-grid">
+                    <div>
+                        <span>Travel Request</span>
+                        <strong>{selectedQueueItem.travelRequestName}</strong>
+                    </div>
+                    <div>
+                        <span>Employee</span>
+                        <strong>{selectedQueueItem.employeeName}</strong>
+                    </div>
+                    <div>
+                        <span>Route</span>
+                        <strong>{selectedQueueItem.travelRoute}</strong>
+                    </div>
+                    <div>
+                        <span>Manager Approval</span>
+                        <strong>{selectedQueueItem.Manager_Approval_Status__c}</strong>
+                    </div>
+                    <div>
+                        <span>Travel Status</span>
+                        <strong>{selectedQueueItem.Travel_Status__c}</strong>
+                    </div>
+                    <div>
+                        <span>Finance Review Status</span>
+                        <strong>{selectedQueueItem.Finance_Review_Status__c}</strong>
+                    </div>
+                    <div>
+                        <span>Travel End Date</span>
+                        <template lwc:if={selectedQueueItem.travelEndDate}>
+                            <lightning-formatted-date-time
+                                value={selectedQueueItem.travelEndDate}
+                                year="numeric"
+                                month="short"
+                                day="2-digit">
+                            </lightning-formatted-date-time>
+                        </template>
+                        <template lwc:else>
+                            <strong>Not available</strong>
+                        </template>
+                    </div>
+                    <div>
+                        <span>Travel Start Date</span>
+                        <template lwc:if={selectedQueueItem.travelStartDate}>
+                            <lightning-formatted-date-time
+                                value={selectedQueueItem.travelStartDate}
+                                year="numeric"
+                                month="short"
+                                day="2-digit">
+                            </lightning-formatted-date-time>
+                        </template>
+                        <template lwc:else>
+                            <strong>Not available</strong>
+                        </template>
+                    </div>
+                    <div>
+                        <span>Estimated Travel Cost</span>
+                        <lightning-formatted-number
+                            value={selectedQueueItem.estimatedTravelCost}
+                            format-style="currency"
+                            currency-code="INR"
+                            maximum-fraction-digits="2">
+                        </lightning-formatted-number>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NO REPORT: KEEP TRIP VISIBLE, BLOCK REIMBURSEMENT -->
+            <template lwc:if={selectedQueueItem.hasExpenseReport}>
+                <section class="panel">
+                    <h2>Expense Report Details</h2>
+                    <div class="detail-grid">
+                        <div>
+                            <span>Report</span>
+                            <strong>{selectedReport.Name}</strong>
+                        </div>
+                        <div>
+                            <span>Claimed Amount</span>
+                            <lightning-formatted-number
+                                value={selectedReport.Total_Amount__c}
+                                format-style="currency"
+                                currency-code="INR"
+                                maximum-fraction-digits="2">
+                            </lightning-formatted-number>
+                        </div>
+                        <div>
+                            <span>Expense Status</span>
+                            <strong>{selectedReport.displayStatus}</strong>
+                        </div>
+                        <div>
+                            <span>Policy Status</span>
+                            <strong>{selectedReport.displayPolicyStatus}</strong>
+                        </div>
+                        <div>
+                            <span>AI Risk Score</span>
+                            <strong>{selectedReport.displayRiskScore}</strong>
+                        </div>
+                    </div>
+                    <p class="explanation">{selectedReport.displayAIExplanation}</p>
+                </section>
+
+                <!-- EXPENSE ITEMS -->
+                <section class="panel">
+                    <h2>Actual Expenses and Receipt Verification</h2>
+                    <template lwc:if={isLoadingItems}>
+                        <lightning-spinner
+                            alternative-text="Loading expense items"
+                            size="medium">
+                        </lightning-spinner>
+                    </template>
+
+                    <template lwc:if={hasExpenseItems}>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Vendor</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Receipt</th>
+                                        <th scope="col">Verification</th>
+                                        <th scope="col">Flags</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={expenseItems} for:item="item">
+                                        <tr key={item.Id}>
+                                            <td>
+                                                <template lwc:if={item.Expense_Date__c}>
+                                                    <lightning-formatted-date-time
+                                                        value={item.Expense_Date__c}
+                                                        year="numeric"
+                                                        month="short"
+                                                        day="2-digit">
+                                                    </lightning-formatted-date-time>
+                                                </template>
+                                                <template lwc:else>—</template>
+                                            </td>
+                                            <td>{item.Expense_Category__c}</td>
+                                            <td>{item.Vendor_Name__c}</td>
+                                            <td>
+                                                <lightning-formatted-number
+                                                    value={item.Amount__c}
+                                                    format-style="currency"
+                                                    currency-code="INR"
+                                                    maximum-fraction-digits="2">
+                                                </lightning-formatted-number>
+                                            </td>
+                                            <td>{item.displayReceiptStatus}</td>
+                                            <td>{item.displayVerificationStatus}</td>
+                                            <td>
+                                                <template lwc:if={item.Possible_Duplicate__c}>
+                                                    <span class="warning">Possible duplicate</span>
+                                                </template>
+                                                <template lwc:if={item.Policy_Violation__c}>
+                                                    <span class="warning">Policy flag</span>
+                                                </template>
+                                                <template lwc:if={item.noFlags}>
+                                                    <span>None recorded</span>
+                                                </template>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </template>
+
+                    <template lwc:if={showEmptyItems}>
+                        <p class="empty">No expense items are linked to this report yet.</p>
+                    </template>
+                </section>
+
+                <!-- POLICY REVIEW -->
+                <section class="panel">
+                    <h2>Policy Checks and AI Review</h2>
+                    <lightning-button
+                        label="Evaluate Policy"
+                        variant="brand"
+                        onclick={handleEvaluatePolicy}
+                        disabled={isSaving}>
+                    </lightning-button>
+                    <p class="explanation">{selectedReport.displayAIExplanation}</p>
+                </section>
+
+                <!-- FINANCE ACTIONS -->
+                <section class="panel finance-panel">
+                    <h2>Finance Review and Reimbursement</h2>
+                    <p>
+                        <strong>Expense Status:</strong>
+                        {selectedReport.Expense_Status__c}
+                    </p>
+                    <p>
+                        <strong>Manager Approval:</strong>
+                        {selectedQueueItem.Travel_Status__c}
+                    </p>
+
+                    <template lwc:if={decisionDisabledReason}>
+                        <div class="warning" role="status">
+                            {decisionDisabledReason}
+                        </div>
+                    </template>
+
+                    <lightning-textarea
+                        label="Finance review comments"
+                        value={financeComments}
+                        onchange={handleCommentsChange}
+                        placeholder="Explain your decision or list missing documents">
+                    </lightning-textarea>
+
+                    <div class="action-row finance-actions">
+                        <lightning-button
+                            label="Submit Draft"
+                            variant="neutral"
+                            disabled={isSubmitExpensesDisabled}
+                            onclick={handleSubmitExpenses}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Evaluate Policy"
+                            variant="neutral"
+                            disabled={isSaving}
+                            onclick={handleEvaluatePolicy}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Approve Report"
+                            variant="brand"
+                            disabled={isApproveDisabled}
+                            onclick={handleApproveReport}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Reject Report"
+                            variant="destructive"
+                            disabled={isRejectDisabled}
+                            onclick={handleRejectReport}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Mark as Paid"
+                            variant="brand"
+                            disabled={isMarkPaidDisabled}
+                            onclick={handleMarkPaid}>
+                        </lightning-button>
+                    </div>
+
+                    <p class="subtitle">
+                        Mark as Paid only after reimbursement has actually been completed.
+                        Salesforce updates the status; it does not transfer money.
+                    </p>
+                </section>
+            </template>
+
+            <template lwc:else>
+                <section class="panel">
+                    <h2>Expense Report Required</h2>
+                    <p class="warning">
+                        This travel request is manager-approved, but no expense report
+                        is linked to it. Finance can see the request, but cannot approve
+                        or reject reimbursement until the employee submits an expense
+                        report with the required expense items.
+                    </p>
+                </section>
+            </template>
+        </template>
+
+        <template lwc:else>
+            <section class="panel">
+                <h2>Finance Review and Reimbursement</h2>
+                <p class="empty">
+                    Select a travel request above to inspect its details.
+                </p>
+            </section>
+        </template>
+    </div>
+</template>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Travel_Purpose_And_Destination_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(
+    ISBLANK(TEXT(Travel_Purpose__c)),
+    ISBLANK(Destination__c)
+)</errorConditionFormula>
+    <errorMessage>Enter both a travel purpose and a destination before saving the request.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,594 @@
+/* =====================================================
+   WANDERROSTER — EXPENSE SETTLEMENT CENTER
+   Dark navy + teal dashboard theme
+   Preserves existing settlement layout and responsiveness
+   ===================================================== */
+
+/* COMPONENT BACKGROUND */
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #f0f6ff;
+    background: #0b111b;
+}
+
+/* =====================================================
+   MAIN DASHBOARD
+   ===================================================== */
+
+.dashboard {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: calc(100vh - 32px);
+    padding: 24px;
+    overflow-wrap: anywhere;
+    background: #0b111b;
+    color: #f0f6ff;
+    border-radius: 14px;
+}
+
+.dashboard *,
+.dashboard *::before,
+.dashboard *::after {
+    box-sizing: border-box;
+}
+
+/* =====================================================
+   HEADER / HERO
+   ===================================================== */
+
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding: 28px;
+    margin-bottom: 24px;
+    color: #ffffff;
+    background: linear-gradient(110deg, #142d3a, #183b42);
+    border: 1px solid #28515b;
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.hero > div {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: #55e7cc;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+}
+
+h1 {
+    margin: 0 0 10px;
+    color: #f7fbff;
+    font-size: 28px;
+    line-height: 1.3;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+h2 {
+    margin: 0 0 12px;
+    color: #f0f6ff;
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.subtitle {
+    margin: 0;
+    color: #9bb2ca;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.hero .subtitle {
+    color: #d7e8f2;
+}
+
+/* =====================================================
+   HEADER ACTIONS
+   ===================================================== */
+
+.hero button {
+    flex-shrink: 0;
+}
+
+/* =====================================================
+   METRIC CARDS
+   ===================================================== */
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.metric {
+    min-width: 0;
+    padding: 20px;
+    background: #101c2a;
+    color: #f0f6ff;
+    border: 1px solid #263849;
+    border-top: 4px solid #45d7c2;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.metric:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.24);
+    transform: translateY(-2px);
+}
+
+.metric span {
+    display: block;
+    color: #9bb2ca;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.metric strong {
+    display: block;
+    margin-top: 10px;
+    color: #f0f6ff;
+    font-size: 26px;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.metric.pending {
+    border-top-color: #e5a23b;
+}
+
+.metric.approved {
+    border-top-color: #39d6b4;
+}
+
+.metric.amount {
+    border-top-color: #bd7af6;
+}
+
+.secondary-metrics .metric {
+    padding: 17px 20px;
+}
+
+.secondary-metrics .metric strong {
+    font-size: 23px;
+}
+
+/* =====================================================
+   CONTENT PANELS
+   ===================================================== */
+
+.panel {
+    min-width: 0;
+    margin-top: 22px;
+    padding: 24px;
+    background: #101c2a;
+    color: #f0f6ff;
+    border: 1px solid #263849;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.panel > .subtitle {
+    margin-bottom: 16px;
+}
+
+.panel > h2 + .detail-grid {
+    margin-top: 16px;
+}
+
+/* =====================================================
+   TABLES
+   ===================================================== */
+
+.table-container {
+    width: 100%;
+    max-width: 100%;
+    margin-top: 18px;
+    overflow-x: auto;
+    border: 1px solid #263849;
+    border-radius: 10px;
+    background: #101c2a;
+    -webkit-overflow-scrolling: touch;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+    font-size: 13px;
+}
+
+th {
+    background: #172637;
+    color: #c4d5e6;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+th,
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #263849;
+    vertical-align: middle;
+}
+
+td {
+    color: #cbd9e8;
+    overflow-wrap: anywhere;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #152535;
+}
+
+/* =====================================================
+   STATUS BADGES
+   ===================================================== */
+
+.status {
+    display: inline-block;
+    padding: 5px 10px;
+    color: #c4d5e6;
+    background: #233346;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.status-success {
+    color: #65e6b8;
+    background: #123b36;
+}
+
+.status-danger {
+    color: #ff9b9b;
+    background: #402329;
+}
+
+.status-pending {
+    color: #ffd27a;
+    background: #3c321f;
+}
+
+/* =====================================================
+   WARNING AND ERROR MESSAGES
+   ===================================================== */
+
+.warning {
+    display: block;
+    margin: 10px 0;
+    padding: 12px 14px;
+    color: #ffd27a;
+    background: #332b1c;
+    border: 1px solid #5a4829;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.error {
+    margin: 14px 0;
+    padding: 14px 16px;
+    color: #ff9b9b;
+    background: #3a2229;
+    border: 1px solid #67353e;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   DETAIL GRID
+   ===================================================== */
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.detail-grid > div {
+    min-width: 0;
+    padding: 16px;
+    background: #132130;
+    border: 1px solid #263849;
+    border-radius: 10px;
+}
+
+.detail-grid span {
+    display: block;
+    margin-bottom: 7px;
+    color: #9bb2ca;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.detail-grid strong {
+    display: block;
+    color: #f0f6ff;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   AI EXPLANATION
+   ===================================================== */
+
+.explanation {
+    margin: 18px 0;
+    padding: 16px;
+    color: #cbd9e8;
+    background: #142535;
+    border-left: 4px solid #45d7c2;
+    border-radius: 6px;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   FINANCE REVIEW
+   ===================================================== */
+
+.finance-panel {
+    border-top: 4px solid #45d7c2;
+}
+
+.finance-status {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.finance-status p {
+    min-width: 0;
+    margin: 0;
+    padding: 14px;
+    background: #142535;
+    border: 1px solid #263849;
+    border-radius: 9px;
+    color: #c4d5e6;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.finance-status strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #f0f6ff;
+    font-size: 12px;
+}
+
+.finance-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.processing-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 0;
+    padding: 12px;
+    color: #c4d5e6;
+    background: #142535;
+    border: 1px solid #263849;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+/* =====================================================
+   GENERAL ACTIONS
+   ===================================================== */
+
+.action-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.empty {
+    margin: 16px 0 0;
+    padding: 24px 16px;
+    color: #9bb2ca;
+    background: #132130;
+    border: 1px dashed #42576a;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+/* =====================================================
+   BUTTONS
+   Keep existing Salesforce/LWC button styles intact
+   ===================================================== */
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+button:focus-visible {
+    outline: 2px solid #45d7c2;
+    outline-offset: 3px;
+}
+
+/* =====================================================
+   FORM FIELDS
+   Dark-theme inputs for finance comments and other fields
+   ===================================================== */
+
+textarea,
+input,
+select {
+    max-width: 100%;
+    color: #f0f6ff;
+    background: #0f1a27;
+    border: 1px solid #354a5e;
+    border-radius: 8px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    font: inherit;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+input,
+select {
+    padding: 10px 12px;
+}
+
+textarea::placeholder,
+input::placeholder {
+    color: #8299b0;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+    outline: 2px solid #45d7c2;
+    outline-offset: 1px;
+    border-color: #45d7c2;
+}
+
+/* =====================================================
+   RESPONSIVE LAYOUT — TABLETS
+   ===================================================== */
+
+@media (max-width: 1100px) {
+    .metrics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .finance-status {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* =====================================================
+   RESPONSIVE LAYOUT — MOBILE
+   ===================================================== */
+
+@media (max-width: 700px) {
+    :host {
+        padding: 10px;
+    }
+
+    .dashboard {
+        min-height: calc(100vh - 20px);
+        padding: 14px;
+        border-radius: 10px;
+    }
+
+    .hero {
+        padding: 20px;
+        gap: 18px;
+        border-radius: 14px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .panel {
+        padding: 18px;
+        margin-top: 16px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .finance-status {
+        grid-template-columns: 1fr;
+    }
+
+    th,
+    td {
+        padding: 12px 10px;
+    }
+
+    .metric {
+        padding: 18px;
+    }
+}
+
+/* =====================================================
+   RESPONSIVE LAYOUT — SMALL PHONES
+   ===================================================== */
+
+@media (max-width: 480px) {
+    .metrics {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .metric {
+        padding: 17px;
+    }
+
+    .metric strong {
+        font-size: 23px;
+    }
+
+    .hero {
+        padding: 18px;
+    }
+
+    .panel {
+        padding: 14px;
+    }
+
+    .finance-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

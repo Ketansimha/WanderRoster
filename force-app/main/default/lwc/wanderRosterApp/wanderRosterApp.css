@@ -1,0 +1,364 @@
+/* =========================================
+   WANDERROSTER — MAIN APPLICATION
+   Corrected CSS and responsive layout
+   ========================================= */
+
+/* =========================================
+   COMPONENT ROOT
+   ========================================= */
+
+:host {
+    display: block;
+    width: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #e9f0f5;
+    background: #0a111b;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* =========================================
+   APP SHELL LAYOUT
+   ========================================= */
+
+.app-shell {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background: #0a111b;
+}
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+
+.sidebar {
+    width: 240px;
+    flex: 0 0 240px;
+    padding: 24px 16px;
+    background: #101b29;
+    border-right: 1px solid #273544;
+    color: #e9f0f5;
+    display: flex;
+    flex-direction: column;
+}
+
+/* BRAND SECTION */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.brand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: #45d9c1;
+    color: #0a111b;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.brand h1 {
+    margin: 0;
+    color: #f2f7fa;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+}
+
+.brand p {
+    margin: 2px 0 0;
+    color: #7790a4;
+    font-size: 10px;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* NAVIGATION HEADING */
+
+.nav-heading {
+    margin: 16px 0 8px 8px;
+    color: #8ba0b2;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+}
+
+/* WORKSPACE NAVIGATION BUTTONS */
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin: 0 0 6px;
+    padding: 10px 12px;
+    border: 1px solid transparent;
+    border-left: 3px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: #b0bfcc;
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.nav-item lightning-icon {
+    --sds-c-icon-color-foreground-default: #9aafbf;
+}
+
+/* NAVIGATION HOVER */
+
+.nav-item:hover {
+    background: #142731;
+    color: #e9f0f5;
+}
+
+.nav-item:hover lightning-icon {
+    --sds-c-icon-color-foreground-default: #e9f0f5;
+}
+
+/* ACTIVE NAVIGATION ITEM */
+
+.nav-item.active {
+    background: #19333d;
+    border-left-color: #45d9c1;
+    color: #6ce5d0;
+    font-weight: 600;
+}
+
+.nav-item.active lightning-icon {
+    --sds-c-icon-color-foreground-default: #45d9c1;
+}
+
+/* KEYBOARD ACCESSIBILITY */
+
+.nav-item:focus-visible {
+    outline: 2px solid #45d9c1;
+    outline-offset: 2px;
+}
+
+/* SIDEBAR FOOTER */
+
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #273544;
+    color: #9aafbf;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-dot {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #45d9c1;
+}
+
+/* =========================================
+   MAIN CONTENT AREA
+   ========================================= */
+
+.main-area {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 28px;
+    background: #0a111b;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================
+   TOP HEADER
+   ========================================= */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 18px 22px;
+    border: 1px solid #273543;
+    border-radius: 12px;
+    background: #111d2a;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.breadcrumb {
+    margin: 0 0 4px;
+    color: #9aafbf;
+    font-size: 12px;
+}
+
+.topbar h2 {
+    margin: 0;
+    color: #f1f6fa;
+    font-size: 22px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+
+.topbar-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    background: #192a3a;
+    border: 1px solid #283d52;
+    color: #b1c1ce;
+    font-size: 12px;
+}
+
+.topbar-label lightning-icon {
+    --sds-c-icon-color-foreground-default: #45d9c1;
+}
+
+/* =========================================
+   DYNAMIC PAGE CONTENT
+   ========================================= */
+
+.page-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+}
+
+/* CHILD COMPONENTS */
+
+c-wander-roster-dashboard,
+c-wander-roster-finance,
+c-wander-roster-manager,
+c-wander-roster-settlement {
+    display: block;
+    width: 100%;
+    min-width: 0;
+}
+
+/* =========================================
+   APP FOOTER
+   ========================================= */
+
+.app-footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #273544;
+    color: #91a3b2;
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* =========================================
+   SHARED BUTTON BEHAVIOUR
+   ========================================= */
+
+button {
+    font-family: inherit;
+}
+
+button:focus-visible {
+    outline: 2px solid #45d9c1;
+    outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVE LAYOUT — TABLETS
+   ========================================= */
+
+@media (max-width: 1050px) {
+    .sidebar {
+        width: 210px;
+        flex-basis: 210px;
+    }
+
+    .main-area {
+        padding: 20px;
+    }
+}
+
+/* =========================================
+   RESPONSIVE LAYOUT — MOBILE
+   ========================================= */
+
+@media (max-width: 700px) {
+    .app-shell {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex: 0 0 auto;
+        padding: 20px 15px;
+        border-right: none;
+        border-bottom: 1px solid #273544;
+    }
+
+    .brand {
+        margin-bottom: 18px;
+    }
+
+    .main-area {
+        width: 100%;
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .topbar {
+        padding: 16px;
+        margin-bottom: 16px;
+    }
+
+    .topbar h2 {
+        font-size: 19px;
+    }
+
+    .app-footer {
+        margin-top: 22px;
+    }
+}
+
+/* =========================================
+   SMALL MOBILE SCREENS
+   ========================================= */
+
+@media (max-width: 400px) {
+    .main-area {
+        padding: 10px;
+    }
+
+    .topbar {
+        padding: 12px;
+    }
+
+    .topbar-label {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+}

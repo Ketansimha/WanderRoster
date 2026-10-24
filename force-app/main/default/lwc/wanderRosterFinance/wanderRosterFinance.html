@@ -1,0 +1,357 @@
+﻿<template>
+    <div class="finance-page">
+
+        <!-- Finance Portal Header -->
+        <header class="finance-header">
+            <div>
+                <p class="eyebrow">WANDERROSTER / FINANCE</p>
+                <h1>Finance Review Center</h1>
+                <p class="header-description">
+                    Review budgets, evaluate policy status, and make
+                    informed finance decisions.
+                </p>
+            </div>
+
+            <lightning-button
+                label="Refresh"
+                icon-name="utility:refresh"
+                variant="neutral"
+                onclick={handleRefresh}
+                disabled={isLoading}>
+            </lightning-button>
+        </header>
+
+        <!-- Summary Cards -->
+        <section class="summary-grid" aria-label="Finance summary">
+            <article class="summary-card">
+                <span class="summary-label">Total Requests</span>
+                <strong class="summary-value">{totalRequests}</strong>
+                <span class="summary-caption">
+                    Travel requests retrieved
+                </span>
+            </article>
+
+            <article class="summary-card">
+                <span class="summary-label">Pending Reviews</span>
+                <strong class="summary-value">{pendingRequests}</strong>
+                <span class="summary-caption">
+                    Awaiting finance review
+                </span>
+            </article>
+
+            <article class="summary-card">
+                <span class="summary-label">Total Estimated Budget</span>
+                <strong class="summary-value">
+                    &#8377; {totalBudget}
+                </strong>
+                <span class="summary-caption">
+                    Combined estimated request costs
+                </span>
+            </article>
+
+            <article class="summary-card">
+                <span class="summary-label">Finance Cleared</span>
+                <strong class="summary-value">{clearedRequests}</strong>
+                <span class="summary-caption">
+                    Cleared for manager review
+                </span>
+            </article>
+        </section>
+
+        <!-- Loading State -->
+        <template lwc:if={isLoading}>
+            <div class="state-panel">
+                <lightning-spinner
+                    alternative-text="Loading finance requests"
+                    size="medium">
+                </lightning-spinner>
+                <p>Loading finance records...</p>
+            </div>
+        </template>
+
+        <!-- Error State -->
+        <template lwc:if={errorMessage}>
+            <div class="error-panel" role="alert">
+                <lightning-icon
+                    icon-name="utility:error"
+                    size="small"
+                    alternative-text="Error">
+                </lightning-icon>
+                <div>
+                    <h2>Unable to load finance records</h2>
+                    <p>{errorMessage}</p>
+                </div>
+            </div>
+        </template>
+
+        <!-- Empty State -->
+        <template lwc:if={showEmpty}>
+            <div class="empty-panel">
+                <lightning-icon
+                    icon-name="utility:info"
+                    size="large"
+                    alternative-text="Information">
+                </lightning-icon>
+                <h2>No travel requests found</h2>
+                <p>
+                    New employee travel requests will appear here
+                    when they are submitted.
+                </p>
+            </div>
+        </template>
+
+        <!-- Travel Request List -->
+        <template lwc:if={showRequestList}>
+            <section class="request-list">
+                <div class="section-heading">
+                    <div>
+                        <h2>Travel Requests for Review</h2>
+                        <p>
+                            Review each request before making
+                            a finance decision.
+                        </p>
+                    </div>
+                    <span class="request-count">
+                        {totalRequests} requests
+                    </span>
+                </div>
+
+                <template for:each={requests} for:item="request">
+                    <article key={request.Id} class="request-card">
+
+                        <!-- Request Header -->
+                        <div class="request-heading">
+                            <div class="request-title">
+                                <span class="request-reference">
+                                    TRAVEL REQUEST
+                                </span>
+
+                                <h3>{request.Name}</h3>
+
+                                <p class="request-route">
+                                    <lightning-icon
+                                        icon-name="utility:location"
+                                        size="x-small"
+                                        alternative-text="Route">
+                                    </lightning-icon>
+
+                                    <span>{request.Origin__c}</span>
+                                    <span class="route-arrow">
+                                        &#8594;
+                                    </span>
+                                    <span>{request.Destination__c}</span>
+                                </p>
+                            </div>
+
+                            <span class={request.financeStatusClass}>
+                                {request.financeStatusLabel}
+                            </span>
+                        </div>
+
+                        <!-- Travel Details -->
+                        <div class="request-section">
+                            <h4 class="section-label">TRAVEL DETAILS</h4>
+
+                            <div class="cost-grid">
+                                <div class="detail-box">
+                                    <span class="detail-label">End Date:</span>
+                                    <strong class="detail-value">
+                                        <lightning-formatted-date-time
+                                            value={request.End_Date__c}
+                                            year="numeric"
+                                            month="short"
+                                            day="2-digit"
+                                            time-zone="UTC">
+                                        </lightning-formatted-date-time>
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box">
+                                    <span class="detail-label">Start Date:</span>
+                                    <strong class="detail-value">
+                                        <lightning-formatted-date-time
+                                            value={request.Start_Date__c}
+                                            year="numeric"
+                                            month="short"
+                                            day="2-digit"
+                                            time-zone="UTC">
+                                        </lightning-formatted-date-time>
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box">
+                                    <span class="detail-label">Travel Status:</span>
+                                    <strong class="detail-value">
+                                        {request.Travel_Status__c}
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box">
+                                    <span class="detail-label">Manager Decision:</span>
+                                    <strong class="detail-value">
+                                        {request.Manager_Approval_Status__c}
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estimated Costs -->
+                        <div class="request-section">
+                            <h4 class="section-label">
+                                ESTIMATED COST BREAKDOWN
+                            </h4>
+
+                            <div class="cost-grid">
+                                <div class="detail-box">
+                                    <span class="detail-label">Travel Cost:</span>
+                                    <strong class="detail-value money-value">
+                                        {request.formattedTravelCost}
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box">
+                                    <span class="detail-label">Hotel Cost:</span>
+                                    <strong class="detail-value money-value">
+                                        {request.formattedHotelCost}
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box">
+                                    <span class="detail-label">
+                                        Other Estimated Cost:
+                                    </span>
+                                    <strong class="detail-value money-value">
+                                        {request.formattedOtherCost}
+                                    </strong>
+                                </div>
+
+                                <div class="detail-box total-box">
+                                    <span class="detail-label">
+                                        Estimated Total:
+                                    </span>
+                                    <strong class="detail-value total-value">
+                                        {request.formattedEstimatedTotal}
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Review -->
+                        <div class="request-section">
+                            <h4 class="section-label">POLICY REVIEW</h4>
+
+                            <div class="detail-box policy-box">
+                                <span class="detail-label">Policy Status:</span>
+                                <strong class="detail-value">
+                                    {request.policyStatusLabel}
+                                </strong>
+                            </div>
+                        </div>
+
+                        <!-- AI Insights -->
+                        <div class="insights-grid">
+                            <div class="insight-card recommendation-card">
+                                <div class="insight-heading">
+                                    <lightning-icon
+                                        icon-name="utility:light_bulb"
+                                        size="small"
+                                        alternative-text="AI recommendation">
+                                    </lightning-icon>
+                                    <h4>AI Recommendation</h4>
+                                </div>
+                                <p>{request.aiRecommendation}</p>
+                            </div>
+
+                            <div class="insight-card explanation-card">
+                                <div class="insight-heading">
+                                    <lightning-icon
+                                        icon-name="utility:info"
+                                        size="small"
+                                        alternative-text="AI explanation">
+                                    </lightning-icon>
+                                    <h4>AI Explanation</h4>
+                                </div>
+                                <p>{request.aiExplanation}</p>
+                            </div>
+                        </div>
+
+                        <!-- Finance Review Actions -->
+                        <template lwc:if={request.canReview}>
+                            <div class="review-panel">
+                                <div>
+                                    <h4>Finance Decision</h4>
+                                    <p>
+                                        Record your review before
+                                        forwarding the request.
+                                    </p>
+                                </div>
+
+                                <lightning-textarea
+                                    label="Finance Comments"
+                                    placeholder="Explain your decision or required changes..."
+                                    value={request.draftComments}
+                                    data-id={request.Id}
+                                    onchange={handleCommentsChange}
+                                    disabled={isSaving}>
+                                </lightning-textarea>
+
+                                <div class="action-row">
+                                    <lightning-button
+                                        label="Clear for Manager"
+                                        title="Clear request for manager approval"
+                                        icon-name="utility:check"
+                                        variant="brand"
+                                        data-id={request.Id}
+                                        data-status="Cleared"
+                                        onclick={handleReview}
+                                        disabled={isSaving}>
+                                    </lightning-button>
+
+                                    <lightning-button
+                                        label="Request Changes"
+                                        title="Return request for changes"
+                                        icon-name="utility:edit"
+                                        variant="destructive"
+                                        data-id={request.Id}
+                                        data-status="Needs Changes"
+                                        onclick={handleReview}
+                                        disabled={isSaving}>
+                                    </lightning-button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Previously Saved Finance Review -->
+                        <template lwc:else>
+                            <div class="review-summary">
+                                <h4>Finance Review Summary</h4>
+
+                                <p>
+                                    <strong>Status:</strong>
+                                    <span>
+                                        {request.financeStatusLabel}
+                                    </span>
+                                </p>
+
+                                <p>
+                                    <strong>Comments:</strong>
+                                    <span>
+                                        {request.Finance_Comments__c}
+                                    </span>
+                                </p>
+                            </div>
+                        </template>
+
+                    </article>
+                </template>
+            </section>
+        </template>
+
+        <!-- Footer -->
+        <footer class="finance-footer">
+            <span>WanderRoster &middot; Finance Operations</span>
+            <span>Powered by Salesforce</span>
+        </footer>
+
+    </div>
+</template>

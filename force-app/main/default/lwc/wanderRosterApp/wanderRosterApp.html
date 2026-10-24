@@ -1,0 +1,139 @@
+<template>
+    <div class="app-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon">W</div>
+
+                <div>
+                    <h1>WanderRoster</h1>
+                    <p>TRAVEL MANAGEMENT</p>
+                </div>
+            </div>
+
+            <!-- Navigation Heading -->
+            <div class="nav-heading">WORKSPACE</div>
+
+            <!-- Sidebar Navigation -->
+            <nav aria-label="WanderRoster navigation">
+
+                <!-- Employee Portal -->
+                <button
+                    type="button"
+                    class={employeeNavClass}
+                    data-page="employee"
+                    onclick={handleNavigation}>
+
+                    <lightning-icon
+                        icon-name="utility:people"
+                        size="small"
+                        alternative-text="Employee">
+                    </lightning-icon>
+
+                    <span>Employee Portal</span>
+                </button>
+
+                <!-- Finance Portal -->
+                <button
+                    type="button"
+                    class={financeNavClass}
+                    data-page="finance"
+                    onclick={handleNavigation}>
+
+                    <lightning-icon
+                        icon-name="utility:money"
+                        size="small"
+                        alternative-text="Finance">
+                    </lightning-icon>
+
+                    <span>Finance Portal</span>
+                </button>
+
+                <!-- Manager Portal -->
+                <button
+                    type="button"
+                    class={managerNavClass}
+                    data-page="manager"
+                    onclick={handleNavigation}>
+
+                    <lightning-icon
+                        icon-name="utility:approval"
+                        size="small"
+                        alternative-text="Manager">
+                    </lightning-icon>
+
+                    <span>Manager Portal</span>
+                </button>
+
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <span class="footer-dot"></span>
+                <span>Salesforce Workspace</span>
+            </div>
+
+        </aside>
+
+        <!-- MAIN APPLICATION AREA -->
+        <main class="main-area">
+
+            <!-- Top Header -->
+            <header class="topbar">
+
+                <div>
+                    <p class="breadcrumb">
+                        WanderRoster / Workspace
+                    </p>
+
+                    <h2>{pageTitle}</h2>
+                </div>
+
+                <div class="topbar-label">
+
+                    <lightning-icon
+                        icon-name="utility:shield"
+                        size="x-small"
+                        alternative-text="Secure workspace">
+                    </lightning-icon>
+
+                    <span>Travel Operations</span>
+                </div>
+
+            </header>
+
+            <!-- DYNAMIC PORTAL CONTENT -->
+            <section class="page-content">
+
+                <!-- Employee Portal -->
+                <template lwc:if={isEmployee}>
+                    <c-wander-roster-dashboard>
+                    </c-wander-roster-dashboard>
+                </template>
+
+                <!-- Finance Portal -->
+                <template lwc:if={isFinance}>
+                    <c-wander-roster-settlement>
+                    </c-wander-roster-settlement>
+                </template>
+
+                <!-- Manager Portal -->
+                <template lwc:if={isManager}>
+                    <c-wander-roster-manager>
+                    </c-wander-roster-manager>
+                </template>
+
+            </section>
+
+            <!-- APPLICATION FOOTER -->
+            <footer class="app-footer">
+                WanderRoster - Travel and Expense Management
+            </footer>
+
+        </main>
+
+    </div>
+</template>

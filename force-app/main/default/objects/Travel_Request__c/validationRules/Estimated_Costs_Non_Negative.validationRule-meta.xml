@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Estimated_Costs_Non_Negative</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(
+    Travel_Cost__c &lt; 0,
+    Hotel_Cost__c &lt; 0,
+    Other_Estimated_Cost__c &lt; 0
+)</errorConditionFormula>
+    <errorMessage>Estimated costs cannot be negative. Enter zero or a positive amount.</errorMessage>
+</ValidationRule>
